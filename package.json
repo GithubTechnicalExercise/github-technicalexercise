@@ -1,0 +1,22 @@
+{
+  "name": "github-technicalexercise",
+  "description": "Simple Github Webhook in Node",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">= 17.0.0"
+  },
+  "author": "Sandra PARLANT",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "express": "^4.17.3",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^8.5.1"
+  }
+}
