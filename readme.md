@@ -96,11 +96,11 @@ As this is a POC, not everything is done. Must be done :
 * As the default version of the API may change, specify a specific version in the Accept header to ensure the stability of the application
 
 ## Usefull links
-https://docs.github.com/en/rest/overview/permissions-required-for-github-apps
-https://docs.github.com/en/enterprise-server@3.4/developers/apps/managing-github-apps/installing-github-apps
-https://docs.github.com/en/developers/apps/building-github-apps/authenticating-with-github-apps
-https://docs.github.com/en/developers/apps/building-github-apps/creating-a-github-app
-https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks
-https://docs.github.com/en/rest
-https://docs.github.com/en/rest/overview/endpoints-available-for-github-apps
-https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks 
+https://docs.github.com/en/rest/overview/permissions-required-for-github-apps  
+https://docs.github.com/en/enterprise-server@3.4/developers/apps/managing-github-apps/installing-github-apps  
+https://docs.github.com/en/developers/apps/building-github-apps/authenticating-with-github-apps  
+https://docs.github.com/en/developers/apps/building-github-apps/creating-a-github-app  
+https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks  
+https://docs.github.com/en/rest  
+https://docs.github.com/en/rest/overview/endpoints-available-for-github-apps  
+https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks   
