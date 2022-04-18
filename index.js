@@ -116,7 +116,7 @@ function protectDefaultBranch(appToken, owner, repository) {
 
     let body = {
         required_status_checks: null,
-        enforce_admins: null,
+        enforce_admins: true,
         required_pull_request_reviews: {
             dismissal_restrictions: {},
             required_approving_review_count: 1,
