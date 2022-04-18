@@ -97,9 +97,9 @@ function createIssue(appToken, owner, repository, protection) {
         owner: `${owner}`,
         repo: `${repository}`,
         title: "[Auto] Main Branch Protection",
-        body: `${protection}`,
+        body: `@sparlant \`${protection}\``,
         assignees: [
-            'sparlant'
+            "sparlant"
         ]
     };
 
