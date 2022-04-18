@@ -30,13 +30,9 @@ app.post('/', (req, res) => {
     } else {
         let jwtToken = createJwt();
 
-        let headers = {};
-        headers['Content-Type'] = 'application/json';
-        headers['Authorization'] = `Bearer ${jwtToken}`;
-        headers['user-agent'] = 'nodejs';
         return getInstallationInfo(jwtToken).then((installations) => {
             let installationId = JSON.parse(installations)[0].id;
-            authenticate(jwtToken, installationId).then((auth) => {
+            authenticateInstallation(jwtToken, installationId).then((auth) => {
                 let appToken = JSON.parse(auth).token;
                 createReadme(appToken, owner, repository)
                     .then(resultReadme => {
@@ -155,7 +151,7 @@ function createReadme(appToken, owner, repository) {
     return callGithubAPI(path, method, headers, body);
 }
 
-function authenticate(jwtToken, installationId) {
+function authenticateInstallation(jwtToken, installationId) {
     let path = `/app/installations/${installationId}/access_tokens`;
     let method = 'POST';
     let headers = {};
