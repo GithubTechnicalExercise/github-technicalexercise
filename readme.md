@@ -13,21 +13,24 @@ A Github webhook called when a repository is created to :
 As it is a POC, not all functionalities are taken into account.
 
 Working scenario :
-* the project created is empty
+* the project created is empty and public
 * there is an only Github Application installed on the organization
 * there is only a repository creation webhook configured
 
 Not working scenario : 
-* the project created is not empty (contains a branch, when created with a `git push` or with `Add a README file` option on the UI)
+* the project created is not empty (contains a branch, when created with a `git push` or with `Add a README file` option on the UI) or no public
 * no Github Application installed on the organization
 * other webhooks configured
 
 ## Declare the Github App
-__/!\ If you don't have a known DNS, you need to deploy your application first without the secret an environment variable parts to get your application URL. Cf `How to run on GCP ?`__
-* Declare the application with your deployed application URL
-* Install the application on your organization
-* Create a private key and dowload the `private.pem` file
+__/!\ If you don't have a known DNS, you need to deploy your application first without the secret and environment variable parts to get your application URL. Cf `How to run on GCP ?`__
+* Declare the application on your organization as a GitHub App with following informations : 
+    * Name : TechnicalExercise
+    * Homepage URL : your GCP cloud run application URL
+    * Permissions : Repository permissions/Administration ; Repository permissions/Contents ; Repository permissions/Issues
 * Get your application id
+* Create a private key and dowload the as `private.pem` file
+* Install the application on your organization
 
 ## How to run on GCP ?
 ### GCP Prerequisites
@@ -37,6 +40,7 @@ __/!\ If you don't have a known DNS, you need to deploy your application first w
     * CloudBuild API
     * ArtifactRegistry API
     * SecretManager API
+* Your default compute service account must be granted the 'Secret Manager Secret Accessor' role
 * You need to create a secret containing your private key with 
 ```
 gcloud secrets create githubapppem
@@ -51,12 +55,16 @@ gcloud run deploy github-technicalexercise --source . --region=europe-west1 --al
 ```
 
 ## Webhook configuration
-* Configure your webhook to capture only repository creation
+* Configure a webhook to capture only repository creation with following informations : 
+    * Payload URL : your GCP cloud run application URL
+    * Content type : application/json
+    * Secret : __TODO__
+    * Choose : `Let me select individual events` and check `Repositories`
 
 ### Continuous deployment with Github Action
 You'll find a Github Action here `.github/workflow/deploy-cloud-run.yml`. You need to :
-* create a service account with the rights to deploy a CloudRun
-* create a key for this service account
+* create a GCP service account with the rights to deploy a CloudRun
+* create a key for this GCP service account
 * create a Github secret `GITUHBACTIONSA` with the email of the service account
 * create a Github secret `GITUHBACTIONSAKEY` with the key of the service account
 * create a Github secret `GCPPROJECTID` with the GPC project id

@@ -1,0 +1,30 @@
+name: GitHub Action Deploy Webhook on Cloud Run
+on: [push]
+jobs:
+  job_id:
+    runs-on: 'ubuntu-latest'
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+    - id: 'checkout'
+      uses: 'actions/checkout@v3'
+    - id: 'auth'
+      name: 'Authentication'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        service_account: ${{ secrets.GITUHBACTIONSA }} 
+        credentials_json: ${{ secrets.GITUHBACTIONSAKEY }}
+        project_id: ${{ secrets.GCPPROJECTID }} 
+    - id: 'deploy-cloud-run'
+      name: 'Deploy Cloud Run'
+      uses: 'google-github-actions/deploy-cloudrun@v0'
+      with:
+        source: .
+        project_id: ${{ secrets.GCPPROJECTID }}
+        service: 'github-technicalexercise'
+        image: 'github-technicalexercise'
+        region: 'europe-west1'
+        env_vars: 'APP_ID=${{ secrets.GITHUBAPPID }}' 
+        secrets: |
+          /etc/secrets/private.pem=githubapppem:latest
