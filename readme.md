@@ -81,8 +81,14 @@ You can now test your app wit curl :
 curl -X POST http://localhost:9090 -d '{"repository":{"name":"your-repository-name","owner":{"login":"your-owner-or-organization"}}}' --header 'Content-Type: application/json'
 ```
 
-## Permissions
-https://docs.github.com/en/rest/overview/permissions-required-for-github-apps#permission-on-administration
+## Usefull links
+https://docs.github.com/en/rest/overview/permissions-required-for-github-apps
+https://docs.github.com/en/enterprise-server@3.4/developers/apps/managing-github-apps/installing-github-apps
+https://docs.github.com/en/developers/apps/building-github-apps/authenticating-with-github-apps
+https://docs.github.com/en/developers/apps/building-github-apps/creating-a-github-app
+https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks
+https://docs.github.com/en/rest
+https://docs.github.com/en/rest/overview/endpoints-available-for-github-apps
 
 __TODO__ jeton en dur pour authent github
 __TODO__ secret app dans github et push dans gcp dans github action
