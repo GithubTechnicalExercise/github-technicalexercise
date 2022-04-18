@@ -115,13 +115,19 @@ function protectDefaultBranch(appToken, owner, repository) {
     headers['user-agent'] = 'nodejs';
 
     let body = {
-        required_status_checks: {
-            strict: true,
-            "contexts": ["continuous-integration/travis-ci"]
-        },
+        required_status_checks: null,
         enforce_admins: null,
-        required_pull_request_reviews: null,
-        restrictions: null
+        required_pull_request_reviews: {
+            dismissal_restrictions: {},
+            required_approving_review_count: 1,
+            require_code_owner_reviews: false,
+            dismiss_stale_reviews: true,
+            bypass_pull_request_allowances: {}
+        },
+        restrictions: {
+            users: [],
+            teams: []
+        }
     };
 
     return callGithubAPI(path, method, headers, body);
