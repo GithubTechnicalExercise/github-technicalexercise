@@ -93,6 +93,7 @@ As this is a POC, not everything is done. Must be done :
 * Unit tests
 * Integration test
 * Complete CICD (Unit tests, integration tests, security compliance, code quality, github app creation, github app installation, secret generation, ...)
+* As the default version of the API may change, specify a specific version in the Accept header to ensure the stability of the application
 
 ## Usefull links
 https://docs.github.com/en/rest/overview/permissions-required-for-github-apps
