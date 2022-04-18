@@ -88,6 +88,12 @@ You can now test your app wit curl :
 curl -X POST http://localhost:9090 -d '{"repository":{"name":"your-repository-name","owner":{"login":"your-owner-or-organization"}}}' --header 'Content-Type: application/json' --header 'X-Hub-Signature-256: sha256=<YOUR-REQUEST-SIGNATURE>'
 ```
 
+## Next
+As this is a POC, not everything is done. Must be done : 
+* Unit tests
+* Integration test
+* Complete CICD (Unit tests, integration tests, security compliance, code quality, github app creation, github app installation, secret generation, ...)
+
 ## Usefull links
 https://docs.github.com/en/rest/overview/permissions-required-for-github-apps
 https://docs.github.com/en/enterprise-server@3.4/developers/apps/managing-github-apps/installing-github-apps
