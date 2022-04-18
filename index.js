@@ -99,7 +99,7 @@ function createIssue(appToken, owner, repository, protection) {
         title: "[Auto] Main Branch Protection",
         body: `@sparlant \`${protection}\``,
         assignees: [
-            "sparlant"
+            '16257979' //sparlant github id
         ]
     };
 
