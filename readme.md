@@ -45,20 +45,23 @@ __/!\ If you don't have a known DNS, you need to deploy your application first w
 ```
 gcloud secrets create githubapppem
 gcloud secrets versions add githubapppem --data-file="private.pem"
+
+gcloud secrets create REQUEST_SECRET
+echo -n "<YOUR-SECRET-TEXT>" | gcloud secrets versions add REQUEST_SECRET --data-file=-
 ```
 
 ### How to deploy manually ?
 * You need to deploy your application on CloudRun with : 
 ```
 npm install
-gcloud run deploy github-technicalexercise --source . --region=europe-west1 --allow-unauthenticated --update-secrets=/etc/secrets/private.pem=githubapppem:latest --update-env-vars APP_ID=<YOUR-APP_ID>
+gcloud run deploy github-technicalexercise --source . --region=europe-west1 --allow-unauthenticated --update-secrets=/etc/secrets/private.pem=githubapppem:latest --update-secrets=REQUEST_SECRET=REQUEST_SECRET:latest --update-env-vars APP_ID=<YOUR-APP_ID>
 ```
 
 ## Webhook configuration
 * Configure a webhook to capture only repository creation with following informations : 
     * Payload URL : your GCP cloud run application URL
     * Content type : application/json
-    * Secret : __TODO__
+    * Secret : the secret text stored as "REQUEST_SECRET" in GCP secrets
     * Choose : `Let me select individual events` and check `Repositories`
 
 ### Continuous deployment with Github Action
@@ -74,11 +77,15 @@ You'll find a Github Action here `.github/workflow/deploy-cloud-run.yml`. You ne
 You must have the application private key file (`private.pem`) at this location : `/etc/secrets/private.pem`
 ```
 npm install
-APP_ID=<YOUR-APP_ID> node index.js 
+APP_ID=<YOUR-APP_ID> REQUEST_SECRET="abcde12345" node index.js 
+```
+Generate your request signature : 
+```
+echo -n '{"repository":{"name":"your-repository-name","owner":{"login":"your-owner-or-organization"}}}' | openssl dgst -hex -sha256 -hmac "<YOUR-SECRET-TEXT>"
 ```
 You can now test your app wit curl : 
 ```
-curl -X POST http://localhost:9090 -d '{"repository":{"name":"your-repository-name","owner":{"login":"your-owner-or-organization"}}}' --header 'Content-Type: application/json'
+curl -X POST http://localhost:9090 -d '{"repository":{"name":"your-repository-name","owner":{"login":"your-owner-or-organization"}}}' --header 'Content-Type: application/json' --header 'X-Hub-Signature-256: sha256=<YOUR-REQUEST-SIGNATURE>'
 ```
 
 ## Usefull links
@@ -89,6 +96,7 @@ https://docs.github.com/en/developers/apps/building-github-apps/creating-a-githu
 https://docs.github.com/en/developers/webhooks-and-events/webhooks/about-webhooks
 https://docs.github.com/en/rest
 https://docs.github.com/en/rest/overview/endpoints-available-for-github-apps
+https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks 
 
-__TODO__ jeton en dur pour authent github
+
 __TODO__ secret app dans github et push dans gcp dans github action

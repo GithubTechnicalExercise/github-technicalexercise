@@ -28,3 +28,4 @@ jobs:
         env_vars: 'APP_ID=${{ secrets.GITHUBAPPID }}' 
         secrets: |
           /etc/secrets/private.pem=githubapppem:latest
+          REQUEST_SECRET=REQUEST_SECRET:latest

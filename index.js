@@ -11,64 +11,73 @@ app.use(express.json());
 const defaultBranch = "main";
 const githubAPIUrl = "api.github.com";
 const githubAPIPort = "443";
-const appId = process.env.APP_ID; //"190391";
+const sigHeaderName = 'X-Hub-Signature-256';
+
+const appId = process.env.APP_ID;
+const requestSecret = process.env.REQUEST_SECRET;
 
 app.post('/', (req, res) => {
     let repository = req.body.repository.name;
     let owner = req.body.repository.owner.login;
 
-    let jwtToken = createJwt();
+    let sentSignatureHeader = req.get(sigHeaderName);
 
-    let headers = {};
-    headers['Content-Type'] = 'application/json';
-    headers['Authorization'] = `Bearer ${jwtToken}`;
-    headers['user-agent'] = 'nodejs';
-    return getInstallationInfo(jwtToken).then((installations) => {
-        let installationId = JSON.parse(installations)[0].id;
-        authenticate(jwtToken, installationId).then((auth) => {
-            let appToken = JSON.parse(auth).token;
-            createReadme(appToken, owner, repository)
-                .then(resultReadme => {
-                    console.log(`ResultReadme : ${resultReadme}`);
-                    protectDefaultBranch(appToken, owner, repository)
-                        .then(resultProtect => {
-                            console.log(`ResultProtect : ${resultProtect}`);
-                            createIssue(appToken, owner, repository, resultProtect)
-                                .then(resultIssue => {
-                                    console.log(`ResultIssue : ${resultIssue}`);
-                                    res.send(`Main branch created with empty readme and protected, issue created`);
-                                })
-                                .catch( error => {
-                                    console.log(`Error CreateIssue : ${error}`);
-                                    res.status(500);
-                                    res.send(error);
-                                })
-                        })
-                        .catch( error => {
-                            console.log(`Error CreateProtection : ${error}`);
-                            res.status(500);
-                            res.send(error);
-                        })
-                })
-                .catch( error => {
-                    console.log(`Error CreateReadme : ${error}`);
-                    res.status(500);
-                    res.send(error);
-                })
-        })
-        .catch( error => {
-            console.log(`Error Authent : ${error}`);
+    if (!checkRequestSignature(sentSignatureHeader, req.body)) {
+        let err = 'Error checkRequestSecret';
+        console.log(err);
+        res.status(500);
+        res.send(err);
+    } else {
+        let jwtToken = createJwt();
+
+        let headers = {};
+        headers['Content-Type'] = 'application/json';
+        headers['Authorization'] = `Bearer ${jwtToken}`;
+        headers['user-agent'] = 'nodejs';
+        return getInstallationInfo(jwtToken).then((installations) => {
+            let installationId = JSON.parse(installations)[0].id;
+            authenticate(jwtToken, installationId).then((auth) => {
+                let appToken = JSON.parse(auth).token;
+                createReadme(appToken, owner, repository)
+                    .then(resultReadme => {
+                        console.log(`ResultReadme : ${resultReadme}`);
+                        protectDefaultBranch(appToken, owner, repository)
+                            .then(resultProtect => {
+                                console.log(`ResultProtect : ${resultProtect}`);
+                                createIssue(appToken, owner, repository, resultProtect)
+                                    .then(resultIssue => {
+                                        console.log(`ResultIssue : ${resultIssue}`);
+                                        res.send(`Main branch created with empty readme and protected, issue created`);
+                                    })
+                                    .catch( error => {
+                                        console.log(`Error CreateIssue : ${error}`);
+                                        res.status(500);
+                                        res.send(error);
+                                    })
+                            })
+                            .catch( error => {
+                                console.log(`Error CreateProtection : ${error}`);
+                                res.status(500);
+                                res.send(error);
+                            })
+                    })
+                    .catch( error => {
+                        console.log(`Error CreateReadme : ${error}`);
+                        res.status(500);
+                        res.send(error);
+                    })
+            })
+            .catch( error => {
+                console.log(`Error Authent : ${error}`);
+                res.status(500);
+                res.send(error);
+            })
+        }).catch((error)=> {
+            console.log(`Error Install : ${error}`);
             res.status(500);
             res.send(error);
         })
-    }).catch((error)=> {
-        console.log(`Error Install : ${error}`);
-        res.status(500);
-        res.send(error);
-    })
-    
-    
-    
+    }
 });
 
 app.get('/', (req, res) => {
@@ -226,4 +235,23 @@ function createJwt() {
     var token = jwt.sign(payload, privateKey, { algorithm: 'RS256' });
 
     return token;
+}
+
+function checkRequestSignature(sentSignatureHeader, body) {
+    const sigHashAlg = 'sha256';
+
+    if (!body) {
+        return false;
+    }
+
+    let data = JSON.stringify(body);
+    let utf8SentSignature = Buffer.from(sentSignatureHeader || '', 'utf8');
+    
+    let hmac = crypto.createHmac(sigHashAlg, requestSecret);
+    let computeSignature = Buffer.from(`${sigHashAlg}=${hmac.update(data).digest('hex')}`, 'utf8');
+
+    if (utf8SentSignature.length !== computeSignature.length || !crypto.timingSafeEqual(computeSignature, utf8SentSignature)) {
+        return false;
+    }
+    return true;
 }
